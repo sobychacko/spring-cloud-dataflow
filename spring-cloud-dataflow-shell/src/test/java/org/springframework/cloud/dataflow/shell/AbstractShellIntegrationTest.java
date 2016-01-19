@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.dataflow.admin.AdminApplication;
-import org.springframework.cloud.dataflow.admin.config.AdminConfiguration;
+import org.springframework.cloud.dataflow.admin.AdminConfiguration;
 import org.springframework.cloud.dataflow.artifact.registry.InMemoryArtifactRegistry;
 import org.springframework.cloud.dataflow.artifact.registry.ArtifactRegistry;
 import org.springframework.cloud.dataflow.shell.command.StreamCommandTemplate;

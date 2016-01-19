@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.dataflow.admin.config;
+package org.springframework.cloud.dataflow.admin;
 
 import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL;
 
@@ -22,18 +22,20 @@ import java.util.Arrays;
 
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.repository.redis.RedisMetricRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.dataflow.admin.completion.TapOnChannelExpansionStrategy;
-import org.springframework.cloud.dataflow.admin.repository.InMemoryStreamDefinitionRepository;
-import org.springframework.cloud.dataflow.admin.repository.InMemoryTaskDefinitionRepository;
-import org.springframework.cloud.dataflow.admin.repository.StreamDefinitionRepository;
-import org.springframework.cloud.dataflow.admin.repository.TaskDefinitionRepository;
+import org.springframework.cloud.dataflow.admin.config.ArtifactRegistryPopulator;
+import org.springframework.cloud.dataflow.admin.controller.WebConfiguration;
+import org.springframework.cloud.dataflow.admin.repository.*;
 import org.springframework.cloud.dataflow.artifact.registry.ArtifactRegistry;
 import org.springframework.cloud.dataflow.artifact.registry.RedisArtifactRegistry;
 import org.springframework.cloud.dataflow.completion.CompletionConfiguration;
 import org.springframework.cloud.dataflow.completion.RecoveryStrategy;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -54,62 +56,49 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Patrick Peralta
  * @author Thomas Risberg
  * @author Janne Valkealahti
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Configuration
-@EnableHypermediaSupport(type = HAL)
-@EnableSpringDataWebSupport
-@Import(CompletionConfiguration.class)
+@ConfigurationProperties
 @EnableConfigurationProperties(AdminProperties.class)
+@Import({CompletionConfiguration.class, RepositoryConfiguration.class, WebConfiguration.class})
 public class AdminConfiguration {
 
-	@Bean
-	public MetricRepository metricRepository(RedisConnectionFactory redisConnectionFactory) {
-		return new RedisMetricRepository(redisConnectionFactory);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public MetricRepository metricRepository(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisMetricRepository(redisConnectionFactory);
+    }
 
-	@Bean
-	public StreamDefinitionRepository streamDefinitionRepository() {
-		return new InMemoryStreamDefinitionRepository();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public StreamDefinitionRepository streamDefinitionRepository() {
+        return new InMemoryStreamDefinitionRepository();
+    }
 
-	@Bean
-	public TaskDefinitionRepository taskDefinitionRepository() {
-		return new InMemoryTaskDefinitionRepository();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public TaskDefinitionRepository taskDefinitionRepository() {
+        return new InMemoryTaskDefinitionRepository();
+    }
 
-	@Bean
-	public ArtifactRegistry artifactRegistry(RedisConnectionFactory redisConnectionFactory) {
-		return new RedisArtifactRegistry(redisConnectionFactory);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ArtifactRegistry artifactRegistry(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisArtifactRegistry(redisConnectionFactory);
+    }
 
-	@Bean
-	public ArtifactRegistryPopulator artifactRegistryPopulator(ArtifactRegistry artifactRegistry) {
-		return new ArtifactRegistryPopulator(artifactRegistry);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ArtifactRegistryPopulator artifactRegistryPopulator(ArtifactRegistry artifactRegistry) {
+        return new ArtifactRegistryPopulator(artifactRegistry);
+    }
 
-	@Bean
-	public HttpMessageConverters messageConverters() {
-		return new HttpMessageConverters(
-				// Prevent default converters
-				false,
-				// Have Jackson2 converter as the sole converter
-				Arrays.<HttpMessageConverter<?>>asList(new MappingJackson2HttpMessageConverter()));
-	}
 
-	@Bean
-	public WebMvcConfigurer configurer() {
-		return new WebMvcConfigurerAdapter() {
-
-			@Override
-			public void configurePathMatch(PathMatchConfigurer configurer) {
-				configurer.setUseSuffixPatternMatch(false);
-			}
-		};
-	}
-
-	@Bean
-	public RecoveryStrategy tapOnChannelExpansionStrategy() {
-		return new TapOnChannelExpansionStrategy();
-	}
-
+    @Bean
+    @ConditionalOnMissingBean
+    public RecoveryStrategy tapOnChannelExpansionStrategy() {
+        return new TapOnChannelExpansionStrategy();
+    }
 }
+

@@ -1,0 +1,8 @@
+# register useful default values for the Dataflow Admin Local module
+
+# register Dataflow Admin Local module-specific beans
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.springframework.cloud.dataflow.admin.spi.local.LocalConfiguration
+
+org.springframework.cloud.dataflow.admin.config.DataflowAdminDefaultProperties=\
+  org.springframework.cloud.dataflow.admin.spi.local.LocalAdminDefaultProperties

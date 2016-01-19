@@ -29,18 +29,15 @@ import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfigur
  * Bootstrap class for Spring Cloud Data Flow Admin.
  *
  * @author Mark Fisher
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {
-		OAuth2AutoConfiguration.class
+        OAuth2AutoConfiguration.class
 })
 public class AdminApplication {
 
-	public static void main(String[] args) {
-		List<String> argsList = new ArrayList<>();
-		argsList.addAll(Arrays.asList(args));
-		argsList.add("--spring.cloud.bootstrap.name=admin");
-		SpringApplication.run(AdminApplication.class, argsList.toArray(new String[0]));
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(AdminApplication.class);
+    }
 }
